@@ -19,6 +19,7 @@ bool insert_at_beginning(Node **head, int value);
 bool insert_at_end(Node **head, int value);
 bool insert_at(Node **head, int value, int position);
 bool delete_at_beginning(Node **head);
+bool delete_at_end(Node **head);
 void print_list(Node *head);
 
 int main()
@@ -58,7 +59,7 @@ int main()
 
     for (int i = 0; i < 9; i++)
     {
-        delete_at_beginning(&list1);
+        delete_at_end(&list1);
         print_list(list1);
     }
 
@@ -208,12 +209,13 @@ bool delete_at_end(Node **head)
     {
         return false;
     }
+
     if (*head == NULL)
     {
         return false;
     }
 
-    if ((*head)->next = NULL)
+    if ((*head)->next == NULL)
     {
         free(*head);
         *head = NULL;
@@ -221,8 +223,11 @@ bool delete_at_end(Node **head)
     }
 
     Node *ptr = *head;
-    while (ptr->next != NULL)
+    while (ptr->next->next != NULL)
     {
         ptr = ptr->next;
     }
+    free(ptr->next);
+    ptr->next = NULL;
+    return true;
 }
