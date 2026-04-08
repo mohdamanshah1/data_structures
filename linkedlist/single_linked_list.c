@@ -20,6 +20,7 @@ bool insert_at_end(Node **head, int value);
 bool insert_at(Node **head, int value, int position);
 bool delete_at_beginning(Node **head);
 bool delete_at_end(Node **head);
+bool delete_at(Node **head, int position);
 void print_list(Node *head);
 
 int main()
@@ -66,12 +67,63 @@ int main()
     return 0;
 }
 
-bool insert_at_beginning(Node **head, int value)
+void print_list(Node *head)
+{
+    if (head == NULL)
+    {
+        return;
+    }
+
+    Node *ptr = head;
+    while (ptr != NULL)
+    {
+        printf("%d, ", ptr->value);
+        ptr = ptr->next;
+    }
+    printf("\n");
+}
+
+bool validate_before_insertion(Node **head, int position)
 {
     if (head == NULL)
     {
         return false;
     }
+
+    if (position < 1)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool validate_before_deletion(Node **head, int position)
+{
+    if (head == NULL)
+    {
+        return false;
+    }
+
+    if (*head == NULL)
+    {
+        return false;
+    }
+
+    if (position < 1)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool insert_at_beginning(Node **head, int value)
+{
+    bool is_valid = validate_before_insertion(head, 1);
+
+    if (is_valid == false)
+        return false;
 
     if ((*head) == NULL)
     {
@@ -91,10 +143,10 @@ bool insert_at_beginning(Node **head, int value)
 
 bool insert_at_end(Node **head, int value)
 {
-    if (head == NULL)
-    {
+    bool is_valid = validate_before_insertion(head, INT_MAX);
+
+    if (is_valid == false)
         return false;
-    }
 
     if (*head == NULL)
     {
@@ -118,33 +170,12 @@ bool insert_at_end(Node **head, int value)
     return true;
 }
 
-void print_list(Node *head)
-{
-    if (head == NULL)
-    {
-        return;
-    }
-
-    Node *ptr = head;
-    while (ptr != NULL)
-    {
-        printf("%d, ", ptr->value);
-        ptr = ptr->next;
-    }
-    printf("\n");
-}
-
 bool insert_at(Node **head, int value, int position)
 {
-    if (head == NULL)
-    {
-        return false;
-    }
+    bool is_valid = validate_before_insertion(head, position);
 
-    if (position == 0)
-    {
+    if (is_valid == false)
         return false;
-    }
 
     if (*head == NULL)
     {
@@ -185,15 +216,10 @@ bool insert_at(Node **head, int value, int position)
 
 bool delete_at_beginning(Node **head)
 {
-    if (head == NULL)
-    {
-        return false;
-    }
+    bool is_valid = validate_before_deletion(head, 1);
 
-    if (*head == NULL)
-    {
+    if (is_valid == false)
         return false;
-    }
 
     Node *node_to_delete = *head;
     (*head) = (*head)->next;
@@ -205,15 +231,10 @@ bool delete_at_beginning(Node **head)
 
 bool delete_at_end(Node **head)
 {
-    if (head == NULL)
-    {
-        return false;
-    }
+    bool is_valid = validate_before_deletion(head, INT_MAX);
 
-    if (*head == NULL)
-    {
+    if (is_valid == false)
         return false;
-    }
 
     if ((*head)->next == NULL)
     {
@@ -229,5 +250,46 @@ bool delete_at_end(Node **head)
     }
     free(ptr->next);
     ptr->next = NULL;
+    return true;
+}
+
+bool delete_at(Node **head, int position)
+{
+    bool is_valid = validate_before_deletion(head, position);
+
+    if (is_valid == false)
+        return false;
+
+    if (position == 1)
+    {
+        Node *temp = *head;
+        (*head) = (*head)->next;
+        temp->next = NULL;
+        free(temp);
+        return true;
+    }
+
+    int index;
+    Node *prev_node = *head;
+
+    for (index = 1; index < position - 1; index++)
+    {
+        prev_node = prev_node->next;
+        if (prev_node == NULL)
+        {
+            break;
+        }
+    }
+
+    if (prev_node == NULL)
+        return false;
+
+    if (prev_node->next == NULL)
+        return false;
+
+    Node *node_to_delete = prev_node->next;
+    prev_node->next = node_to_delete->next;
+    node_to_delete->next = NULL;
+    free(node_to_delete);
     return true;
 }
